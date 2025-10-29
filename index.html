@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional cube solving timer with score tracking and animations">
+    <meta name="keywords" content="cube timer, rubik's cube, speedcubing, timer, puzzle">
+    <title>CubeTimer Pro - Professional Cube Solving Timer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #f0f0f0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Landing Page Styles */
+        .landing-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        .cube {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #ff0080, #00ff80);
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(255, 0, 128, 0.7);
+            animation: float 15s infinite linear;
+        }
+
+        .cube:nth-child(2) {
+            background: linear-gradient(45deg, #00ff80, #0080ff);
+            width: 70px;
+            height: 70px;
+            animation-duration: 20s;
+            animation-delay: 2s;
+        }
+
+        .cube:nth-child(3) {
+            background: linear-gradient(45deg, #0080ff, #8000ff);
+            width: 40px;
+            height: 40px;
+            animation-duration: 12s;
+            animation-delay: 5s;
+        }
+
+        .cube:nth-child(4) {
+            background: linear-gradient(45deg, #8000ff, #ff0080);
+            width: 60px;
+            height: 60px;
+            animation-duration: 18s;
+            animation-delay: 7s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(100px, 100px) rotate(90deg);
+            }
+            50% {
+                transform: translate(200px, 0) rotate(180deg);
+            }
+            75% {
+                transform: translate(100px, -100px) rotate(270deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff0080, #00ff80, #0080ff, #8000ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        .description {
+            max-width: 800px;
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            max-width: 1000px;
+        }
+
+        .feature {
+            background: rgba(30, 30, 30, 0.7);
+            padding: 1.5rem;
+            border-radius: 10px;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #00ff80;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #f0f0f0;
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, #ff0080, #8000ff);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 0, 128, 0.4);
+            font-weight: 600;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 0, 128, 0.6);
+        }
+
+        /* Timer Page Styles */
+        .timer-page {
+            display: none;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+        }
+
+        .timer-display {
+            font-size: 8rem;
+            font-weight: 700;
+            margin: 2rem 0;
+            text-shadow: 0 0 20px rgba(0, 255, 128, 0.7);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .timer-ready {
+            color: #00ff80;
+        }
+
+        .timer-running {
+            color: #ff0080;
+        }
+
+        .timer-stopped {
+            color: #0080ff;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 20px rgba(0, 128, 255, 0.7);
+            }
+            50% {
+                transform: scale(1.05);
+                text-shadow: 0 0 30px rgba(0, 128, 255, 1);
+            }
+            100% {
+                transform: scale(1);
+                text-shadow: 0 0 20px rgba(0, 128, 255, 0.7);
+            }
+        }
+
+        .instructions {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        .score-panel {
+            position: absolute;
+            right: 2rem;
+            top: 2rem;
+            width: 300px;
+            background: rgba(30, 30, 30, 0.8);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #00ff80;
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: rgba(50, 50, 50, 0.5);
+            border-radius: 5px;
+        }
+
+        .score-rank {
+            font-weight: 700;
+            color: #ff0080;
+        }
+
+        .score-value {
+            font-weight: 600;
+        }
+
+        .reset-btn {
+            background: #ff3333;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .reset-btn:hover {
+            background: #ff5555;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .screenshot-btn {
+            background: linear-gradient(45deg, #0080ff, #00ff80);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .screenshot-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+        }
+
+        .celebration-content {
+            background: linear-gradient(45deg, #ff0080, #8000ff);
+            padding: 3rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255, 0, 128, 0.7);
+            animation: celebration-pop 0.5s ease;
+        }
+
+        @keyframes celebration-pop {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .celebration-title {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .celebration-time {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+        }
+
+        .close-celebration {
+            background: white;
+            color: #8000ff;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .close-celebration:hover {
+            transform: scale(1.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .score-panel {
+                position: relative;
+                right: auto;
+                top: auto;
+                width: 100%;
+                max-width: 500px;
+                margin: 2rem auto;
+            }
+            
+            .timer-display {
+                font-size: 5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .timer-display {
+                font-size: 4rem;
+            }
+            
+            .features {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div class="landing-page" id="landingPage">
+        <div class="bg-animation">
+            <div class="cube"></div>
+            <div class="cube"></div>
+            <div class="cube"></div>
+            <div class="cube"></div>
+        </div>
+        
+        <h1 class="logo">CubeTimer Pro</h1>
+        <p class="tagline">Professional Cube Solving Timer with Advanced Analytics</p>
+        
+        <div class="description">
+            <p>CubeTimer Pro is the ultimate tool for speedcubers. Track your solving times, monitor your progress, and compete with yourself to achieve new personal records. With a sleek dark theme, smooth animations, and comprehensive statistics, CubeTimer Pro elevates your cubing experience.</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⏱️</div>
+                <h3 class="feature-title">Precision Timer</h3>
+                <p class="feature-desc">Accurate timing with millisecond precision and intuitive controls.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Score Tracking</h3>
+                <p class="feature-desc">Track your top 3 scores with local storage and reset options.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎨</div>
+                <h3 class="feature-title">Dark Theme</h3>
+                <p class="feature-desc">Easy on the eyes with beautiful animations and visual feedback.</p>
+            </div>
+        </div>
+        
+        <button class="start-btn" id="startBtn">Get Started with Our Service</button>
+    </div>
+    
+    <!-- Timer Page -->
+    <div class="timer-page" id="timerPage">
+        <div class="bg-animation">
+            <div class="cube"></div>
+            <div class="cube"></div>
+            <div class="cube"></div>
+            <div class="cube"></div>
+        </div>
+        
+        <div class="score-panel">
+            <h2 class="panel-title">Top Scores</h2>
+            <div class="score-item">
+                <span class="score-rank">1st</span>
+                <span class="score-value" id="score1">--</span>
+                <button class="reset-btn" onclick="resetScore(1)">Reset</button>
+            </div>
+            <div class="score-item">
+                <span class="score-rank">2nd</span>
+                <span class="score-value" id="score2">--</span>
+                <button class="reset-btn" onclick="resetScore(2)">Reset</button>
+            </div>
+            <div class="score-item">
+                <span class="score-rank">3rd</span>
+                <span class="score-value" id="score3">--</span>
+                <button class="reset-btn" onclick="resetScore(3)">Reset</button>
+            </div>
+        </div>
+        
+        <div class="timer-container">
+            <p class="instructions">Click and hold the timer for 3 seconds to start, then click again to stop</p>
+            <div class="timer-display timer-ready" id="timerDisplay">00.000</div>
+            
+            <div class="action-buttons">
+                <button class="screenshot-btn" id="screenshotBtn">Take Screenshot</button>
+                <button class="back-btn" id="backBtn">Back to Home</button>
+            </div>
+        </div>
+        
+        <div class="celebration" id="celebration">
+            <div class="celebration-content">
+                <h2 class="celebration-title">Congratulations!</h2>
+                <p>You set a new time of</p>
+                <div class="celebration-time" id="celebrationTime">00.000</div>
+                <button class="close-celebration" id="closeCelebration">Awesome!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const landingPage = document.getElementById('landingPage');
+        const timerPage = document.getElementById('timerPage');
+        const startBtn = document.getElementById('startBtn');
+        const backBtn = document.getElementById('backBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const screenshotBtn = document.getElementById('screenshotBtn');
+        const celebration = document.getElementById('celebration');
+        const celebrationTime = document.getElementById('celebrationTime');
+        const closeCelebration = document.getElementById('closeCelebration');
+        
+        // Timer variables
+        let timerInterval;
+        let startTime;
+        let elapsedTime = 0;
+        let timerRunning = false;
+        let holdTimeout;
+        
+        // Score variables
+        let scores = [null, null, null]; // 1st, 2nd, 3rd
+        
+        // Load scores from localStorage
+        function loadScores() {
+            const savedScores = localStorage.getItem('cubeTimerScores');
+            if (savedScores) {
+                scores = JSON.parse(savedScores);
+                updateScoreDisplay();
+            }
+        }
+        
+        // Save scores to localStorage
+        function saveScores() {
+            localStorage.setItem('cubeTimerScores', JSON.stringify(scores));
+        }
+        
+        // Update score display
+        function updateScoreDisplay() {
+            for (let i = 1; i <= 3; i++) {
+                const scoreElement = document.getElementById(`score${i}`);
+                if (scores[i-1] !== null) {
+                    scoreElement.textContent = formatTime(scores[i-1]);
+                } else {
+                    scoreElement.textContent = '--';
+                }
+            }
+        }
+        
+        // Format time for display
+        function formatTime(time) {
+            const minutes = Math.floor(time / 60000);
+            const seconds = Math.floor((time % 60000) / 1000);
+            const milliseconds = time % 1000;
+            
+            if (minutes > 0) {
+                return `${minutes}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+            } else {
+                return `${seconds}.${milliseconds.toString().padStart(3, '0')}`;
+            }
+        }
+        
+        // Start timer
+        function startTimer() {
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(updateTimer, 10);
+            timerRunning = true;
+            timerDisplay.classList.remove('timer-ready');
+            timerDisplay.classList.add('timer-running');
+        }
+        
+        // Stop timer
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerDisplay.classList.remove('timer-running');
+            timerDisplay.classList.add('timer-stopped');
+            
+            // Check if this is a new high score
+            checkHighScore(elapsedTime);
+        }
+        
+        // Reset timer
+        function resetTimer() {
+            clearInterval(timerInterval);
+            elapsedTime = 0;
+            timerRunning = false;
+            timerDisplay.textContent = "00.000";
+            timerDisplay.classList.remove('timer-running', 'timer-stopped');
+            timerDisplay.classList.add('timer-ready');
+        }
+        
+        // Update timer display
+        function updateTimer() {
+            elapsedTime = Date.now() - startTime;
+            timerDisplay.textContent = formatTime(elapsedTime);
+        }
+        
+        // Check if time is a new high score
+        function checkHighScore(time) {
+            let newScoreIndex = -1;
+            
+            // Find where this time fits in the scores
+            for (let i = 0; i < 3; i++) {
+                if (scores[i] === null || time < scores[i]) {
+                    newScoreIndex = i;
+                    break;
+                }
+            }
+            
+            // If it's a new high score, update the scores
+            if (newScoreIndex !== -1) {
+                // Shift scores down
+                for (let i = 2; i > newScoreIndex; i--) {
+                    scores[i] = scores[i-1];
+                }
+                
+                // Insert new score
+                scores[newScoreIndex] = time;
+                
+                // Save and update display
+                saveScores();
+                updateScoreDisplay();
+                
+                // Show celebration
+                celebrationTime.textContent = formatTime(time);
+                celebration.style.display = 'flex';
+            }
+        }
+        
+        // Reset a specific score
+        function resetScore(rank) {
+            scores[rank-1] = null;
+            saveScores();
+            updateScoreDisplay();
+        }
+        
+        // Take screenshot (simulated)
+        function takeScreenshot() {
+            alert('Screenshot functionality would be implemented here. In a real application, this would capture the current screen.');
+        }
+        
+        // Event Listeners
+        startBtn.addEventListener('click', function() {
+            landingPage.style.display = 'none';
+            timerPage.style.display = 'block';
+        });
+        
+        backBtn.addEventListener('click', function() {
+            timerPage.style.display = 'none';
+            landingPage.style.display = 'flex';
+            resetTimer();
+        });
+        
+        timerDisplay.addEventListener('mousedown', function() {
+            if (!timerRunning) {
+                holdTimeout = setTimeout(function() {
+                    startTimer();
+                }, 3000);
+            }
+        });
+        
+        timerDisplay.addEventListener('mouseup', function() {
+            clearTimeout(holdTimeout);
+            
+            if (timerRunning) {
+                stopTimer();
+            }
+        });
+        
+        timerDisplay.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            if (!timerRunning) {
+                holdTimeout = setTimeout(function() {
+                    startTimer();
+                }, 3000);
+            }
+        });
+        
+        timerDisplay.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            clearTimeout(holdTimeout);
+            
+            if (timerRunning) {
+                stopTimer();
+            }
+        });
+        
+        screenshotBtn.addEventListener('click', takeScreenshot);
+        
+        closeCelebration.addEventListener('click', function() {
+            celebration.style.display = 'none';
+        });
+        
+        // Initialize
+        loadScores();
+    </script>
+</body>
+</html>
