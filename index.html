@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Professional cube solving timer with score tracking and animations">
+    <meta name="description" content="Professional cube solving timer with competition-style controls">
     <meta name="keywords" content="cube timer, rubik's cube, speedcubing, timer, puzzle">
-    <title>CubeTimer Pro - Professional Cube Solving Timer</title>
+    <title>CubeTimer Pro - Competition Timer</title>
     <style>
         * {
             margin: 0;
@@ -224,10 +224,25 @@
             transition: all 0.3s ease;
             user-select: none;
             font-family: 'Courier New', monospace;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .timer-ready {
             color: #00ff80;
+        }
+
+        .timer-countdown {
+            color: #ff9900;
+            animation: countdownPulse 1s infinite;
+        }
+
+        @keyframes countdownPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .timer-running {
@@ -259,6 +274,8 @@
             margin-bottom: 2rem;
             text-align: center;
             opacity: 0.8;
+            max-width: 600px;
+            line-height: 1.6;
         }
 
         .hand-pads {
@@ -281,6 +298,8 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             user-select: none;
             border: 2px solid transparent;
+            text-align: center;
+            padding: 1rem;
         }
 
         .hand-pad:hover {
@@ -490,7 +509,7 @@
         </div>
         
         <h1 class="logo">CubeTimer Pro</h1>
-        <p class="tagline">Professional Cube Solving Timer with Advanced Analytics</p>
+        <p class="tagline">Professional Cube Solving Timer with Competition Controls</p>
         
         <div class="description">
             <p>CubeTimer Pro is the ultimate tool for speedcubers. Track your solving times, monitor your progress, and compete with yourself to achieve new personal records. With a sleek dark theme, smooth animations, and comprehensive statistics, CubeTimer Pro elevates your cubing experience.</p>
@@ -499,8 +518,8 @@
         <div class="features">
             <div class="feature">
                 <div class="feature-icon">⏱️</div>
-                <h3 class="feature-title">Precision Timer</h3>
-                <p class="feature-desc">Accurate timing with millisecond precision and intuitive controls.</p>
+                <h3 class="feature-title">Competition Timer</h3>
+                <p class="feature-desc">Professional timing with competition-style start/stop controls.</p>
             </div>
             <div class="feature">
                 <div class="feature-icon">📊</div>
@@ -543,15 +562,15 @@
         </div>
         
         <div class="timer-container">
-            <p class="instructions">Press and hold the hand pads to start the timer, then release to stop</p>
+            <p class="instructions">Press and hold both hand pads for 3 seconds to start the timer. The timer will begin automatically. Click any pad again to stop the timer.</p>
             <div class="timer-display timer-ready" id="timerDisplay">0.000</div>
             
             <div class="hand-pads">
                 <div class="hand-pad" id="leftPad">
-                    LEFT HAND
+                    PRESS & HOLD BOTH PADS FOR 3 SECONDS TO START
                 </div>
                 <div class="hand-pad" id="rightPad">
-                    RIGHT HAND
+                    THEN CLICK ANY PAD TO STOP
                 </div>
             </div>
             
@@ -590,7 +609,10 @@
         let startTime;
         let elapsedTime = 0;
         let timerRunning = false;
+        let countdownInterval;
+        let countdownValue = 3;
         let padsHeld = false;
+        let startTimeout;
         
         // Score variables
         let scores = [null, null, null]; // 1st, 2nd, 3rd
@@ -658,21 +680,53 @@
             }
         }
         
+        // Start countdown
+        function startCountdown() {
+            countdownValue = 3;
+            timerDisplay.textContent = countdownValue;
+            timerDisplay.classList.remove('timer-ready');
+            timerDisplay.classList.add('timer-countdown');
+            
+            countdownInterval = setInterval(() => {
+                countdownValue--;
+                timerDisplay.textContent = countdownValue;
+                
+                if (countdownValue <= 0) {
+                    clearInterval(countdownInterval);
+                    startTimer();
+                }
+            }, 1000);
+        }
+        
         // Start timer
         function startTimer() {
-            startTime = Date.now() - elapsedTime;
+            startTime = Date.now();
             timerInterval = setInterval(updateTimer, 10);
             timerRunning = true;
-            timerDisplay.classList.remove('timer-ready');
+            timerDisplay.classList.remove('timer-countdown');
             timerDisplay.classList.add('timer-running');
+            
+            // Update pad instructions
+            leftPad.textContent = "CLICK TO STOP";
+            rightPad.textContent = "CLICK TO STOP";
         }
         
         // Stop timer
         function stopTimer() {
             clearInterval(timerInterval);
+            elapsedTime = Date.now() - startTime;
             timerRunning = false;
             timerDisplay.classList.remove('timer-running');
             timerDisplay.classList.add('timer-stopped');
+            
+            // Reset pad states
+            leftPad.classList.remove('active');
+            rightPad.classList.remove('active');
+            padsHeld = false;
+            
+            // Reset pad instructions
+            leftPad.textContent = "PRESS & HOLD BOTH PADS FOR 3 SECONDS TO START";
+            rightPad.textContent = "THEN CLICK ANY PAD TO STOP";
             
             // Check if this is a new high score
             checkHighScore(elapsedTime);
@@ -681,14 +735,20 @@
         // Reset timer
         function resetTimer() {
             clearInterval(timerInterval);
+            clearInterval(countdownInterval);
+            clearTimeout(startTimeout);
             elapsedTime = 0;
             timerRunning = false;
             padsHeld = false;
             timerDisplay.textContent = "0.000";
-            timerDisplay.classList.remove('timer-running', 'timer-stopped');
+            timerDisplay.classList.remove('timer-running', 'timer-stopped', 'timer-countdown');
             timerDisplay.classList.add('timer-ready');
-            leftPad.classList.remove('active', 'ready');
-            rightPad.classList.remove('active', 'ready');
+            leftPad.classList.remove('active');
+            rightPad.classList.remove('active');
+            
+            // Reset pad instructions
+            leftPad.textContent = "PRESS & HOLD BOTH PADS FOR 3 SECONDS TO START";
+            rightPad.textContent = "THEN CLICK ANY PAD TO STOP";
         }
         
         // Update timer display
@@ -757,22 +817,20 @@
         function handlePadStart(e) {
             e.preventDefault();
             
-            if (!timerRunning) {
+            if (!timerRunning && !padsHeld) {
                 // Mark this pad as active
                 e.currentTarget.classList.add('active');
                 
                 // Check if both pads are being held
                 if (leftPad.classList.contains('active') && rightPad.classList.contains('active')) {
                     padsHeld = true;
-                    leftPad.classList.add('ready');
-                    rightPad.classList.add('ready');
                     
-                    // Start timer after a brief delay
-                    setTimeout(() => {
+                    // Start countdown after 3 seconds
+                    startTimeout = setTimeout(() => {
                         if (padsHeld) {
-                            startTimer();
+                            startCountdown();
                         }
-                    }, 500);
+                    }, 3000);
                 }
             }
         }
@@ -780,14 +838,28 @@
         function handlePadEnd(e) {
             e.preventDefault();
             
+            // If timer is running, stop it
             if (timerRunning) {
-                // Stop the timer
                 stopTimer();
+                return;
+            }
+            
+            // If countdown is happening, cancel it
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+                timerDisplay.textContent = "0.000";
+                timerDisplay.classList.remove('timer-countdown');
+                timerDisplay.classList.add('timer-ready');
+            }
+            
+            // Clear start timeout if pads are released before 3 seconds
+            if (startTimeout) {
+                clearTimeout(startTimeout);
             }
             
             // Reset pad states
-            leftPad.classList.remove('active', 'ready');
-            rightPad.classList.remove('active', 'ready');
+            leftPad.classList.remove('active');
+            rightPad.classList.remove('active');
             padsHeld = false;
         }
         
