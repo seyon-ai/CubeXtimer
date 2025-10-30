@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Professional cube solving timer with competition-style controls">
+    <meta name="description" content="Professional cube solving timer with wide hand plates">
     <meta name="keywords" content="cube timer, rubik's cube, speedcubing, timer, puzzle">
     <title>CubeTimer Pro - Competition Timer</title>
     <style>
@@ -17,7 +17,7 @@
         body {
             background-color: #0a0a0a;
             color: #f0f0f0;
-            overflow-x: hidden;
+            overflow: hidden;
             min-height: 100vh;
         }
 
@@ -203,7 +203,6 @@
         .timer-page {
             display: none;
             min-height: 100vh;
-            padding: 2rem;
             position: relative;
             overflow: hidden;
         }
@@ -213,7 +212,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 70vh;
+            min-height: 100vh;
+            position: relative;
         }
 
         .timer-display {
@@ -228,6 +228,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 10;
         }
 
         .timer-ready {
@@ -276,23 +277,23 @@
             opacity: 0.8;
             max-width: 600px;
             line-height: 1.6;
+            z-index: 10;
         }
 
-        .hand-pads {
-            display: flex;
-            gap: 2rem;
-            margin-top: 2rem;
+        .hand-plates {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
         }
 
-        .hand-pad {
-            width: 150px;
-            height: 150px;
-            background: rgba(40, 40, 40, 0.8);
-            border-radius: 10px;
+        .hand-plate {
+            position: absolute;
+            background: rgba(40, 40, 40, 0.7);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -300,23 +301,42 @@
             border: 2px solid transparent;
             text-align: center;
             padding: 1rem;
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
         }
 
-        .hand-pad:hover {
-            transform: scale(1.05);
+        .hand-plate:hover {
             border-color: #00ff80;
         }
 
-        .hand-pad.active {
+        .hand-plate.active {
             background: rgba(0, 255, 128, 0.2);
             border-color: #00ff80;
             box-shadow: 0 0 20px rgba(0, 255, 128, 0.5);
+            color: white;
         }
 
-        .hand-pad.ready {
+        .hand-plate.ready {
             background: rgba(255, 0, 128, 0.2);
             border-color: #ff0080;
             box-shadow: 0 0 20px rgba(255, 0, 128, 0.5);
+            color: white;
+        }
+
+        .plate-left {
+            top: 0;
+            left: 0;
+            width: 40%;
+            height: 40%;
+            border-bottom-right-radius: 100%;
+        }
+
+        .plate-right {
+            bottom: 0;
+            right: 0;
+            width: 40%;
+            height: 40%;
+            border-top-left-radius: 100%;
         }
 
         .score-panel {
@@ -328,6 +348,7 @@
             border-radius: 10px;
             padding: 1.5rem;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 10;
         }
 
         .panel-title {
@@ -374,6 +395,7 @@
             display: flex;
             gap: 1rem;
             margin-top: 2rem;
+            z-index: 10;
         }
 
         .screenshot-btn {
@@ -426,6 +448,27 @@
             text-align: center;
             box-shadow: 0 0 50px rgba(255, 0, 128, 0.7);
             animation: celebration-pop 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff0;
+            animation: confetti-fall 5s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(1000px) rotate(360deg);
+                opacity: 0;
+            }
         }
 
         @keyframes celebration-pop {
@@ -479,6 +522,10 @@
             .timer-display {
                 font-size: 5rem;
             }
+            
+            .hand-plate {
+                font-size: 1.2rem;
+            }
         }
 
         @media (max-width: 768px) {
@@ -495,8 +542,8 @@
                 align-items: center;
             }
             
-            .hand-pads {
-                flex-direction: column;
+            .hand-plate {
+                font-size: 1rem;
             }
         }
     </style>
@@ -509,7 +556,7 @@
         </div>
         
         <h1 class="logo">CubeTimer Pro</h1>
-        <p class="tagline">Professional Cube Solving Timer with Competition Controls</p>
+        <p class="tagline">Professional Cube Solving Timer with Wide Hand Plates</p>
         
         <div class="description">
             <p>CubeTimer Pro is the ultimate tool for speedcubers. Track your solving times, monitor your progress, and compete with yourself to achieve new personal records. With a sleek dark theme, smooth animations, and comprehensive statistics, CubeTimer Pro elevates your cubing experience.</p>
@@ -519,7 +566,7 @@
             <div class="feature">
                 <div class="feature-icon">⏱️</div>
                 <h3 class="feature-title">Competition Timer</h3>
-                <p class="feature-desc">Professional timing with competition-style start/stop controls.</p>
+                <p class="feature-desc">Professional timing with wide hand plates in opposite corners.</p>
             </div>
             <div class="feature">
                 <div class="feature-icon">📊</div>
@@ -562,15 +609,15 @@
         </div>
         
         <div class="timer-container">
-            <p class="instructions">Press and hold both hand pads for 3 seconds to start the timer. The timer will begin automatically. Click any pad again to stop the timer.</p>
+            <p class="instructions">Press and hold both hand plates to start. Release both to begin timing. Press any plate to stop.</p>
             <div class="timer-display timer-ready" id="timerDisplay">0.000</div>
             
-            <div class="hand-pads">
-                <div class="hand-pad" id="leftPad">
-                    PRESS & HOLD BOTH PADS FOR 3 SECONDS TO START
+            <div class="hand-plates">
+                <div class="hand-plate plate-left" id="leftPlate">
+                    LEFT HAND
                 </div>
-                <div class="hand-pad" id="rightPad">
-                    THEN CLICK ANY PAD TO STOP
+                <div class="hand-plate plate-right" id="rightPlate">
+                    RIGHT HAND
                 </div>
             </div>
             
@@ -581,9 +628,9 @@
         </div>
         
         <div class="celebration" id="celebration">
-            <div class="celebration-content">
-                <h2 class="celebration-title">Congratulations!</h2>
-                <p>You set a new time of</p>
+            <div class="celebration-content" id="celebrationContent">
+                <h2 class="celebration-title">New Record! 🎉</h2>
+                <p>Congratulations! You set a new personal best:</p>
                 <div class="celebration-time" id="celebrationTime">0.000</div>
                 <button class="close-celebration" id="closeCelebration">Awesome!</button>
             </div>
@@ -597,22 +644,24 @@
         const startBtn = document.getElementById('startBtn');
         const backBtn = document.getElementById('backBtn');
         const timerDisplay = document.getElementById('timerDisplay');
-        const leftPad = document.getElementById('leftPad');
-        const rightPad = document.getElementById('rightPad');
+        const leftPlate = document.getElementById('leftPlate');
+        const rightPlate = document.getElementById('rightPlate');
         const screenshotBtn = document.getElementById('screenshotBtn');
         const celebration = document.getElementById('celebration');
         const celebrationTime = document.getElementById('celebrationTime');
         const closeCelebration = document.getElementById('closeCelebration');
+        const celebrationContent = document.getElementById('celebrationContent');
         
         // Timer variables
         let timerInterval;
         let startTime;
         let elapsedTime = 0;
         let timerRunning = false;
-        let countdownInterval;
-        let countdownValue = 3;
-        let padsHeld = false;
-        let startTimeout;
+        let platesHeld = false;
+        let platesActive = {
+            left: false,
+            right: false
+        };
         
         // Score variables
         let scores = [null, null, null]; // 1st, 2nd, 3rd
@@ -639,6 +688,26 @@
                 cube.style.top = Math.random() * 90 + '%';
                 container.appendChild(cube);
             }
+        }
+        
+        // Create confetti for celebration
+        function createConfetti() {
+            const confettiCount = 100;
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.animationDelay = Math.random() * 5 + 's';
+                confetti.style.backgroundColor = getRandomColor();
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = confetti.style.width;
+                celebrationContent.appendChild(confetti);
+            }
+        }
+        
+        function getRandomColor() {
+            const colors = ['#ff0080', '#00ff80', '#0080ff', '#8000ff', '#ffff00', '#ff9900'];
+            return colors[Math.floor(Math.random() * colors.length)];
         }
         
         // Load scores from localStorage
@@ -680,35 +749,17 @@
             }
         }
         
-        // Start countdown
-        function startCountdown() {
-            countdownValue = 3;
-            timerDisplay.textContent = countdownValue;
-            timerDisplay.classList.remove('timer-ready');
-            timerDisplay.classList.add('timer-countdown');
-            
-            countdownInterval = setInterval(() => {
-                countdownValue--;
-                timerDisplay.textContent = countdownValue;
-                
-                if (countdownValue <= 0) {
-                    clearInterval(countdownInterval);
-                    startTimer();
-                }
-            }, 1000);
-        }
-        
         // Start timer
         function startTimer() {
             startTime = Date.now();
             timerInterval = setInterval(updateTimer, 10);
             timerRunning = true;
-            timerDisplay.classList.remove('timer-countdown');
+            timerDisplay.classList.remove('timer-ready');
             timerDisplay.classList.add('timer-running');
             
-            // Update pad instructions
-            leftPad.textContent = "CLICK TO STOP";
-            rightPad.textContent = "CLICK TO STOP";
+            // Update plate instructions
+            leftPlate.textContent = "CLICK TO STOP";
+            rightPlate.textContent = "CLICK TO STOP";
         }
         
         // Stop timer
@@ -719,14 +770,16 @@
             timerDisplay.classList.remove('timer-running');
             timerDisplay.classList.add('timer-stopped');
             
-            // Reset pad states
-            leftPad.classList.remove('active');
-            rightPad.classList.remove('active');
-            padsHeld = false;
+            // Reset plate states
+            leftPlate.classList.remove('active', 'ready');
+            rightPlate.classList.remove('active', 'ready');
+            platesHeld = false;
+            platesActive.left = false;
+            platesActive.right = false;
             
-            // Reset pad instructions
-            leftPad.textContent = "PRESS & HOLD BOTH PADS FOR 3 SECONDS TO START";
-            rightPad.textContent = "THEN CLICK ANY PAD TO STOP";
+            // Reset plate instructions
+            leftPlate.textContent = "LEFT HAND";
+            rightPlate.textContent = "RIGHT HAND";
             
             // Check if this is a new high score
             checkHighScore(elapsedTime);
@@ -735,20 +788,20 @@
         // Reset timer
         function resetTimer() {
             clearInterval(timerInterval);
-            clearInterval(countdownInterval);
-            clearTimeout(startTimeout);
             elapsedTime = 0;
             timerRunning = false;
-            padsHeld = false;
+            platesHeld = false;
+            platesActive.left = false;
+            platesActive.right = false;
             timerDisplay.textContent = "0.000";
-            timerDisplay.classList.remove('timer-running', 'timer-stopped', 'timer-countdown');
+            timerDisplay.classList.remove('timer-running', 'timer-stopped');
             timerDisplay.classList.add('timer-ready');
-            leftPad.classList.remove('active');
-            rightPad.classList.remove('active');
+            leftPlate.classList.remove('active', 'ready');
+            rightPlate.classList.remove('active', 'ready');
             
-            // Reset pad instructions
-            leftPad.textContent = "PRESS & HOLD BOTH PADS FOR 3 SECONDS TO START";
-            rightPad.textContent = "THEN CLICK ANY PAD TO STOP";
+            // Reset plate instructions
+            leftPlate.textContent = "LEFT HAND";
+            rightPlate.textContent = "RIGHT HAND";
         }
         
         // Update timer display
@@ -783,8 +836,9 @@
                 saveScores();
                 updateScoreDisplay();
                 
-                // Show celebration
+                // Show celebration with confetti
                 celebrationTime.textContent = formatTime(time);
+                createConfetti();
                 celebration.style.display = 'flex';
             }
         }
@@ -813,72 +867,67 @@
             resetTimer();
         });
         
-        // Hand pad event listeners
-        function handlePadStart(e) {
+        // Hand plate event listeners
+        function handlePlateStart(e, plate) {
             e.preventDefault();
             
-            if (!timerRunning && !padsHeld) {
-                // Mark this pad as active
+            if (!timerRunning) {
+                // Mark this plate as active
+                platesActive[plate] = true;
                 e.currentTarget.classList.add('active');
                 
-                // Check if both pads are being held
-                if (leftPad.classList.contains('active') && rightPad.classList.contains('active')) {
-                    padsHeld = true;
-                    
-                    // Start countdown after 3 seconds
-                    startTimeout = setTimeout(() => {
-                        if (padsHeld) {
-                            startCountdown();
-                        }
-                    }, 3000);
+                // Check if both plates are being held
+                if (platesActive.left && platesActive.right) {
+                    platesHeld = true;
+                    leftPlate.classList.add('ready');
+                    rightPlate.classList.add('ready');
+                    leftPlate.textContent = "RELEASE TO START";
+                    rightPlate.textContent = "RELEASE TO START";
+                }
+            } else {
+                // If timer is running, stop it
+                stopTimer();
+            }
+        }
+        
+        function handlePlateEnd(e, plate) {
+            e.preventDefault();
+            
+            // If timer is not running and both plates were held
+            if (!timerRunning && platesHeld) {
+                platesActive[plate] = false;
+                e.currentTarget.classList.remove('active');
+                
+                // If both plates are released, start the timer
+                if (!platesActive.left && !platesActive.right) {
+                    startTimer();
                 }
             }
         }
         
-        function handlePadEnd(e) {
-            e.preventDefault();
-            
-            // If timer is running, stop it
-            if (timerRunning) {
-                stopTimer();
-                return;
-            }
-            
-            // If countdown is happening, cancel it
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-                timerDisplay.textContent = "0.000";
-                timerDisplay.classList.remove('timer-countdown');
-                timerDisplay.classList.add('timer-ready');
-            }
-            
-            // Clear start timeout if pads are released before 3 seconds
-            if (startTimeout) {
-                clearTimeout(startTimeout);
-            }
-            
-            // Reset pad states
-            leftPad.classList.remove('active');
-            rightPad.classList.remove('active');
-            padsHeld = false;
-        }
-        
         // Add event listeners for both mouse and touch events
-        [leftPad, rightPad].forEach(pad => {
-            // Mouse events
-            pad.addEventListener('mousedown', handlePadStart);
-            pad.addEventListener('mouseup', handlePadEnd);
-            pad.addEventListener('mouseleave', handlePadEnd);
-            
-            // Touch events
-            pad.addEventListener('touchstart', handlePadStart);
-            pad.addEventListener('touchend', handlePadEnd);
-        });
+        leftPlate.addEventListener('mousedown', (e) => handlePlateStart(e, 'left'));
+        leftPlate.addEventListener('mouseup', (e) => handlePlateEnd(e, 'left'));
+        leftPlate.addEventListener('mouseleave', (e) => handlePlateEnd(e, 'left'));
+        
+        rightPlate.addEventListener('mousedown', (e) => handlePlateStart(e, 'right'));
+        rightPlate.addEventListener('mouseup', (e) => handlePlateEnd(e, 'right'));
+        rightPlate.addEventListener('mouseleave', (e) => handlePlateEnd(e, 'right'));
+        
+        // Touch events
+        leftPlate.addEventListener('touchstart', (e) => handlePlateStart(e, 'left'));
+        leftPlate.addEventListener('touchend', (e) => handlePlateEnd(e, 'left'));
+        
+        rightPlate.addEventListener('touchstart', (e) => handlePlateStart(e, 'right'));
+        rightPlate.addEventListener('touchend', (e) => handlePlateEnd(e, 'right'));
         
         screenshotBtn.addEventListener('click', takeScreenshot);
         
         closeCelebration.addEventListener('click', function() {
             celebration.style.display = 'none';
+            // Remove confetti
+            const confettiElements = celebrationContent.querySelectorAll('.confetti');
+            confettiElements.forEach(confetti => confetti.remove());
         });
         
         // Initialize
