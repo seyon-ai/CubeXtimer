@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Professional cube solving timer with wide hand plates">
-    <meta name="keywords" content="cube timer, rubik's cube, speedcubing, timer, puzzle">
+    <meta name="description" content="Professional cube solving timer with PWA capabilities">
+    <meta name="keywords" content="cube timer, rubik's cube, speedcubing, timer, puzzle, PWA">
+    <meta name="theme-color" content="#0a0a0a">
     <title>CubeTimer Pro - Competition Timer</title>
-    <link rel="icon" type="image/png" href="ab.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icons/icon-192x192.png">
     <style>
         * {
             margin: 0;
@@ -20,6 +22,62 @@
             color: #f0f0f0;
             overflow: hidden;
             min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* PWA Install Prompt */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #ff0080, #8000ff);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(255, 0, 128, 0.5);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .install-btn {
+            background: white;
+            color: #8000ff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .install-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .close-install {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Landing Page Styles */
@@ -345,11 +403,12 @@
             right: 2rem;
             top: 2rem;
             width: 300px;
-            background: rgba(30, 30, 30, 0.8);
+            background: rgba(30, 30, 30, 0.9);
             border-radius: 10px;
             padding: 1.5rem;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             z-index: 10;
+            backdrop-filter: blur(10px);
         }
 
         .panel-title {
@@ -429,6 +488,44 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
+        .stats-panel {
+            position: absolute;
+            left: 2rem;
+            top: 2rem;
+            width: 300px;
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+
+        .stats-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #00ff80;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            padding: 0.5rem;
+            background: rgba(50, 50, 50, 0.5);
+            border-radius: 5px;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            color: #ff0080;
+        }
+
+        .stat-value {
+            font-weight: 600;
+        }
+
         .celebration {
             position: fixed;
             top: 0;
@@ -438,7 +535,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 100;
         }
 
@@ -451,6 +548,7 @@
             animation: celebration-pop 0.5s ease;
             position: relative;
             overflow: hidden;
+            max-width: 90%;
         }
 
         .confetti {
@@ -511,13 +609,13 @@
 
         /* Responsive Design */
         @media (max-width: 1024px) {
-            .score-panel {
+            .score-panel, .stats-panel {
                 position: relative;
                 right: auto;
-                top: auto;
+                left: auto;
                 width: 100%;
                 max-width: 500px;
-                margin: 2rem auto;
+                margin: 1rem auto;
             }
             
             .timer-display {
@@ -546,10 +644,68 @@
             .hand-plate {
                 font-size: 1rem;
             }
+            
+            .celebration-content {
+                padding: 2rem;
+            }
+            
+            .celebration-title {
+                font-size: 2rem;
+            }
+            
+            .celebration-time {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .timer-display {
+                font-size: 3rem;
+            }
+            
+            .hand-plate {
+                font-size: 0.9rem;
+                padding: 0.5rem;
+            }
+        }
+
+        /* PWA Status Bar */
+        .pwa-status {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(30, 30, 30, 0.9);
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            z-index: 1000;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .pwa-status.online {
+            background: rgba(0, 255, 128, 0.2);
+            color: #00ff80;
+        }
+
+        .pwa-status.offline {
+            background: rgba(255, 0, 128, 0.2);
+            color: #ff0080;
         }
     </style>
 </head>
 <body>
+    <!-- PWA Status Bar -->
+    <div class="pwa-status" id="pwaStatus"></div>
+
+    <!-- PWA Install Prompt -->
+    <div class="install-prompt" id="installPrompt">
+        <span>Install CubeTimer Pro for better experience</span>
+        <button class="install-btn" id="installBtn">Install</button>
+        <button class="close-install" id="closeInstall">×</button>
+    </div>
+
     <!-- Landing Page -->
     <div class="landing-page" id="landingPage">
         <div class="bg-animation" id="bgAnimation">
@@ -557,13 +713,18 @@
         </div>
         
         <h1 class="logo">CubeTimer Pro</h1>
-        <p class="tagline">Professional Cube Solving Timer with Wide Hand Plates</p>
+        <p class="tagline">Professional Cube Solving Timer with PWA</p>
         
         <div class="description">
-            <p>CubeTimer Pro is the ultimate tool for speedcubers. Track your solving times, monitor your progress, and compete with yourself to achieve new personal records. With a sleek dark theme, smooth animations, and comprehensive statistics, CubeTimer Pro elevates your cubing experience.</p>
+            <p>CubeTimer Pro is the ultimate tool for speedcubers. Track your solving times, monitor your progress, and compete with yourself to achieve new personal records. Now available as a Progressive Web App for offline use!</p>
         </div>
         
         <div class="features">
+            <div class="feature">
+                <div class="feature-icon">📱</div>
+                <h3 class="feature-title">PWA Ready</h3>
+                <p class="feature-desc">Install as an app and use offline with full functionality.</p>
+            </div>
             <div class="feature">
                 <div class="feature-icon">⏱️</div>
                 <h3 class="feature-title">Competition Timer</h3>
@@ -571,13 +732,8 @@
             </div>
             <div class="feature">
                 <div class="feature-icon">📊</div>
-                <h3 class="feature-title">Score Tracking</h3>
-                <p class="feature-desc">Track your top 3 scores with local storage and reset options.</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">🎨</div>
-                <h3 class="feature-title">Dark Theme</h3>
-                <p class="feature-desc">Easy on the eyes with beautiful animations and visual feedback.</p>
+                <h3 class="feature-title">Advanced Stats</h3>
+                <p class="feature-desc">Track your progress with detailed statistics and analytics.</p>
             </div>
         </div>
         
@@ -606,6 +762,26 @@
                 <span class="score-rank">3rd</span>
                 <span class="score-value" id="score3">--</span>
                 <button class="reset-btn" onclick="resetScore(3)">Reset</button>
+            </div>
+        </div>
+
+        <div class="stats-panel">
+            <h2 class="stats-title">Session Stats</h2>
+            <div class="stat-item">
+                <span class="stat-label">Solves Today:</span>
+                <span class="stat-value" id="solvesToday">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Best Today:</span>
+                <span class="stat-value" id="bestToday">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Average:</span>
+                <span class="stat-value" id="averageTime">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Total Solves:</span>
+                <span class="stat-value" id="totalSolves">0</span>
             </div>
         </div>
         
@@ -652,6 +828,10 @@
         const celebrationTime = document.getElementById('celebrationTime');
         const closeCelebration = document.getElementById('closeCelebration');
         const celebrationContent = document.getElementById('celebrationContent');
+        const installPrompt = document.getElementById('installPrompt');
+        const installBtn = document.getElementById('installBtn');
+        const closeInstall = document.getElementById('closeInstall');
+        const pwaStatus = document.getElementById('pwaStatus');
         
         // Timer variables
         let timerInterval;
@@ -666,7 +846,16 @@
         
         // Score variables
         let scores = [null, null, null]; // 1st, 2nd, 3rd
+        let sessionStats = {
+            solvesToday: 0,
+            bestToday: null,
+            totalSolves: 0,
+            allTimes: []
+        };
         
+        // PWA variables
+        let deferredPrompt;
+
         // Create background animations
         function createBackgroundAnimation(container) {
             // Create stars
@@ -711,18 +900,37 @@
             return colors[Math.floor(Math.random() * colors.length)];
         }
         
-        // Load scores from localStorage
-        function loadScores() {
+        // Load scores and stats from localStorage
+        function loadData() {
             const savedScores = localStorage.getItem('cubeTimerScores');
+            const savedStats = localStorage.getItem('cubeTimerStats');
+            const today = new Date().toDateString();
+            const lastVisit = localStorage.getItem('lastVisit');
+            
             if (savedScores) {
                 scores = JSON.parse(savedScores);
                 updateScoreDisplay();
             }
+            
+            if (savedStats) {
+                sessionStats = JSON.parse(savedStats);
+                
+                // Reset daily stats if it's a new day
+                if (lastVisit !== today) {
+                    sessionStats.solvesToday = 0;
+                    sessionStats.bestToday = null;
+                    localStorage.setItem('lastVisit', today);
+                }
+                
+                updateStatsDisplay();
+            }
         }
         
-        // Save scores to localStorage
-        function saveScores() {
+        // Save scores and stats to localStorage
+        function saveData() {
             localStorage.setItem('cubeTimerScores', JSON.stringify(scores));
+            localStorage.setItem('cubeTimerStats', JSON.stringify(sessionStats));
+            localStorage.setItem('lastVisit', new Date().toDateString());
         }
         
         // Update score display
@@ -734,6 +942,25 @@
                 } else {
                     scoreElement.textContent = '--';
                 }
+            }
+        }
+        
+        // Update stats display
+        function updateStatsDisplay() {
+            document.getElementById('solvesToday').textContent = sessionStats.solvesToday;
+            document.getElementById('totalSolves').textContent = sessionStats.totalSolves;
+            
+            if (sessionStats.bestToday !== null) {
+                document.getElementById('bestToday').textContent = formatTime(sessionStats.bestToday);
+            } else {
+                document.getElementById('bestToday').textContent = '--';
+            }
+            
+            if (sessionStats.allTimes.length > 0) {
+                const average = sessionStats.allTimes.reduce((a, b) => a + b, 0) / sessionStats.allTimes.length;
+                document.getElementById('averageTime').textContent = formatTime(average);
+            } else {
+                document.getElementById('averageTime').textContent = '--';
             }
         }
         
@@ -771,6 +998,9 @@
             timerDisplay.classList.remove('timer-running');
             timerDisplay.classList.add('timer-stopped');
             
+            // Update session stats
+            updateSessionStats(elapsedTime);
+            
             // Reset plate states
             leftPlate.classList.remove('active', 'ready');
             rightPlate.classList.remove('active', 'ready');
@@ -784,6 +1014,26 @@
             
             // Check if this is a new high score
             checkHighScore(elapsedTime);
+        }
+        
+        // Update session statistics
+        function updateSessionStats(time) {
+            sessionStats.solvesToday++;
+            sessionStats.totalSolves++;
+            sessionStats.allTimes.push(time);
+            
+            // Update best today
+            if (sessionStats.bestToday === null || time < sessionStats.bestToday) {
+                sessionStats.bestToday = time;
+            }
+            
+            // Keep only last 100 times for average
+            if (sessionStats.allTimes.length > 100) {
+                sessionStats.allTimes.shift();
+            }
+            
+            updateStatsDisplay();
+            saveData();
         }
         
         // Reset timer
@@ -834,7 +1084,7 @@
                 scores[newScoreIndex] = time;
                 
                 // Save and update display
-                saveScores();
+                saveData();
                 updateScoreDisplay();
                 
                 // Show celebration with confetti
@@ -847,13 +1097,70 @@
         // Reset a specific score
         function resetScore(rank) {
             scores[rank-1] = null;
-            saveScores();
+            saveData();
             updateScoreDisplay();
         }
         
         // Take screenshot (simulated)
         function takeScreenshot() {
-            alert('Screenshot functionality would be implemented here. In a real application, this would capture the current screen.');
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Cube Timer Result',
+                    text: `I just solved a cube in ${timerDisplay.textContent}!`,
+                    url: window.location.href
+                });
+            } else {
+                alert('Screenshot functionality would be implemented here. In a real application, this would capture the current screen.');
+            }
+        }
+        
+        // PWA Installation
+        function initializePWA() {
+            // Listen for beforeinstallprompt event
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                
+                // Show install prompt after a delay
+                setTimeout(() => {
+                    if (!window.matchMedia('(display-mode: standalone)').matches) {
+                        installPrompt.style.display = 'flex';
+                    }
+                }, 3000);
+            });
+            
+            // Install button click
+            installBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        installPrompt.style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                }
+            });
+            
+            // Close install prompt
+            closeInstall.addEventListener('click', () => {
+                installPrompt.style.display = 'none';
+            });
+            
+            // Track online/offline status
+            window.addEventListener('online', () => {
+                pwaStatus.textContent = 'Online';
+                pwaStatus.className = 'pwa-status online';
+                pwaStatus.style.display = 'block';
+                setTimeout(() => {
+                    pwaStatus.style.display = 'none';
+                }, 3000);
+            });
+            
+            window.addEventListener('offline', () => {
+                pwaStatus.textContent = 'Offline - App still works';
+                pwaStatus.className = 'pwa-status offline';
+                pwaStatus.style.display = 'block';
+            });
         }
         
         // Event Listeners
@@ -935,8 +1242,22 @@
         document.addEventListener('DOMContentLoaded', function() {
             createBackgroundAnimation(document.getElementById('bgAnimation'));
             createBackgroundAnimation(document.getElementById('timerBgAnimation'));
-            loadScores();
+            loadData();
+            initializePWA();
         });
+
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
